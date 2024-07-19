@@ -99,7 +99,7 @@
 
   // save heading and body font families in variables
   let body-font = "Open Sans"
-  let heading-font = "Montserrat"
+  let heading-font = "Open Sans"
   
   // customize look of figure
   set figure.caption(separator: [ --- ], position: bottom)
