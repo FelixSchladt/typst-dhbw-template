@@ -16,6 +16,8 @@
   university-location,
   at-university,
   date-format,
+  confidential,
+  show-confidentiality-marker,
 ) = {
   if (many-authors) {
     v(-1.5em)
@@ -62,6 +64,19 @@
   if (type-of-thesis != none and type-of-thesis.len() > 0) {
     align(center, text(weight: "semibold", 1.25em, type-of-thesis))
     v(0.5em)
+  }
+
+  // confidentiality stamp (optional)
+  if (show-confidentiality-marker) {
+    let color = if (confidential) {
+      red
+    } else {
+      green.darken(5%)
+    }
+
+    place(right, dx: 30pt, dy: -60pt,)[
+      #circle(radius: 4em, fill: color)
+    ]
   }
 
   // type of degree (optional)

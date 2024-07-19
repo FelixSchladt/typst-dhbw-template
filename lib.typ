@@ -16,6 +16,8 @@
   type-of-thesis: none,
   type-of-degree: none,
   show-confidentiality-statement: true,
+  confidential: true,
+  show-confidentiality-marker: true,
   show-declaration-of-authorship: true,
   show-table-of-contents: true,
   show-acronyms: true,
@@ -143,6 +145,8 @@
     university-location,
     at-university,
     date-format,
+    confidential,
+    show-confidentiality-marker,
   )
 
   set page(
