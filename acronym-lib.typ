@@ -6,110 +6,110 @@
 }
 
 // Check if an acronym exists
-#let is-valid(acr) = {
-  acros.display(acronyms => {
-    if acr not in acronyms {
-      panic(acr + " is not a key in the acronyms dictionary.")
-      return false
-    }
-  })
+#let is-valid(gls) = {
+  // acros.display(acronyms => {
+  //   if gls not in acronyms {
+  //     panic(gls + " is not a key in the acronyms dictionary.")
+  //     return false
+  //   }
+  // })
   return true
 }
 
 // Display acronym as clickable link
-#let display-link(acr, text) = {
-  if is-valid(acr) {
-    link(label("acronym-" + acr), text)
+#let display-link(gls, text) = {
+  if is-valid(gls) {
+    link(label("acronym-" + gls), text)
   }
 }
 
 // Display acronym
-#let display(acr, text, link: true) = {
+#let display(gls, text, link: true) = {
   if link {
-    display-link(acr, text)
+    display-link(gls, text)
   } else {
     text
   }
 }
 
 // Display acronym in short form
-#let acrs(acr, plural: false, link: true) = {
+#let gls-short(gls, plural: false, link: true) = {
   if plural {
-    display(acr, acr + "s", link: link)
+    display(gls, gls + "s", link: link)
   } else {
-    display(acr, acr, link: link)
+    display(gls, gls, link: link)
   }
 }
 // Display acronym in short plural form
-#let acrspl(acr, link: true) = {
-  acrs(acr, plural: true, link: link)
+#let acrspl(gls, link: true) = {
+  gls-short(gls, plural: true, link: link)
 }
 
 // Display acronym in long form
-#let acrl(acr, plural: false, link: true) = {
+#let acrl(gls, plural: false, link: true) = {
   acros.display(acronyms => {
-    if is-valid(acr) {
-      let defs = acronyms.at(acr)
-      if type(defs) == "string" {
-        if plural {
-          display(acr, defs + "s", link: link)
-        } else {
-          display(acr, defs, link: link)
-        }
-      } else if type(defs) == "array" {
-        if defs.len() == 0 {
-          panic("No definitions found for acronym " + acr + ". Make sure it is defined in the dictionary passed to #init-acronyms(dict)")
-        }
-        if plural {
-          if defs.len() == 1 {
-            display(acr, defs.at(0) + "s", link: link)
-          } else if defs.len() == 2 {
-            display(acr, defs.at(1), link: link)
-          } else {
-            panic("Definitions should be arrays of one or two strings. Definition of " + acr + " is: " + type(defs))
-          }
-        } else {  
-          display(acr, defs.at(0), link: link)
-        }
+    //is-valid(gls)
+    let defs = acronyms.at(gls)
+    if type(defs) == "string" {
+      if plural {
+        display(gls, defs + "s", link: link)
       } else {
-        panic("Definitions should be arrays of one or two strings. Definition of " + acr + " is: " + type(defs))
+        display(gls, defs, link: link)
       }
+    } else if type(defs) == "array" {
+      if defs.len() == 0 {
+        panic("No definitions found for acronym " + gls + ". Make sure it is defined in the dictionary passed to #init-acronyms(dict)")
+      }
+      if plural {
+        if defs.len() == 1 {
+          display(gls, defs.at(0) + "s", link: link)
+        } else if defs.len() == 2 {
+          display(gls, defs.at(1), link: link)
+        } else {
+          panic("Definitions should be arrays of one or two strings. Definition of " + gls + " is: " + type(defs))
+        }
+      } else {  
+        display(gls, defs.at(0), link: link)
+      }
+    } else {
+      panic("Definitions should be arrays of one or two strings. Definition of " + gls + " is: " + type(defs))
     }
+    
   })
 }
 // Display acronym in long plural form
-#let acrlpl(acr, link: true) = {
-  acrl(acr, plural: true, link: link)
+#let acrlpl(gls, link: true) = {
+  acrl(gls, plural: true, link: link)
 }
 
 // Display acronym for the first time
-#let acrf(acr, plural: false, link: true) = {
+#let acrf(gls, plural: false, link: true) = {
   if plural {
-    display(acr, [#acrlpl(acr) (#acr\s)], link: link)
+    display(gls, [#acrlpl(gls) (#gls\s)], link: link)
   } else {
-    display(acr, [#acrl(acr) (#acr)], link: link)
+    display(gls, [#acrl(gls) (#gls)], link: link)
   }
-  state(prefix + acr, false).update(true)
+  state(prefix + gls, false).update(true)
 }
 // Display acronym in plural form for the first time
-#let acrfpl(acr, link: true) = {
-  acrf(acr, plural: true, link: link)
+#let acrfpl(gls, link: true) = {
+  acrf(gls, plural: true, link: link)
 }
 
 // Display acronym. Expands it if used for the first time
-#let acr(acr, plural: false, link: true) = {
-  state(prefix + acr, false).display(seen => {
+#let gls(gls, plural: false, link: true) = {
+  state(prefix + gls, false).display(seen => {
     if seen {
       if plural {
-        acrspl(acr, link: link)
+        acrspl(gls, link: link)
       } else {
-        acrs(acr, link: link)
+        gls-short(gls, link: link)
       }
     } else {
       if plural {
-        acrfpl(acr, link: link)
+        acrfpl(gls, link: link)
       } else {
-        acrf(acr, link: link)
+        acrf(gls, link: link)
       }
     }
   })
@@ -117,7 +117,7 @@
 
 // Display acronym in the plural form. Expands it if used for the first time. 
 #let acrpl(acronym, link: true) = {
-  acr(acronym, plural: true, link: link)
+  gls(acronym, plural: true, link: link)
 }
 
 // Print an index of all the acronyms and their definitions.
@@ -132,21 +132,21 @@
     let acronym-keys = acronyms.keys()
 
     let max-width = 0pt
-    for acr in acronym-keys {
-      let result = measure(acr).width
+    for gls in acronym-keys {
+      let result = measure(gls).width
 
       if (result > max-width) {
         max-width = result
       }
     }
 
-    let acr-list = acronym-keys.sorted()
+    let gls-list = acronym-keys.sorted()
 
-    for acr in acr-list{
+    for gls in gls-list{
       grid(
         columns: (max-width + 0.5em, auto),
         gutter: acronym-spacing,
-        [*#acr#label("acronym-" + acr)*], [#acrl(acr, link: false)]
+        [*#gls#label("acronym-" + gls)*], [#acrl(gls, link: false)]
       )
     }
   })

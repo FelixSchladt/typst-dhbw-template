@@ -1,9 +1,12 @@
 #import "@preview/codelst:2.0.1": *
-#import "acronym-lib.typ": init-acronyms, print-acronyms, acr, acrpl, acrs, acrspl, acrl, acrlpl, acrf, acrfpl
+//#import "acronym-lib.typ": init-acronyms, print-acronyms, gls, acrpl, gls-short, acrspl, acrl, acrlpl, acrf, acrfpl
+#import "@preview/glossarium:0.4.1": *
 #import "titlepage.typ": *
 #import "confidentiality-statement.typ": *
 #import "declaration-of-authorship.typ": *
 #import "check-attributes.typ": *
+#import "@preview/hydra:0.5.1": hydra
+
 
 // Workaround for the lack of an `std` scope.
 #let std-bibliography = bibliography
@@ -87,7 +90,7 @@
   set document(title: title, author: authors.map(author => author.name))
   let many-authors = authors.len() > 3
 
-  init-acronyms(acronyms)
+  //init-acronyms(acronyms)
 
   // define logo size with given ration
   let left-logo-height = 2.4cm // left logo is always 2.4cm high
@@ -109,21 +112,21 @@
   show heading: set text(weight: "semibold", font: heading-font)
 
   //heading numbering
-  set heading(numbering: "1.")
  
   // set link style for links that are not acronyms
   show link: it => if (
-    str(it.dest) not in (acronyms.keys().map(acr => ("acronym-" + acr)))
+    true
+    //str(it.dest) not in (acronyms.keys().map(gls => ("acronym-" + gls)))
   ) {
     text(fill: blue, it)
   } else {
     it
   }
   
-  show heading.where(level: 1): it => {
-    pagebreak()
-    v(2em) + it + v(1em)
-  }
+  // show heading.where(level: 1): it => {
+  //   pagebreak(weak: true)
+  //   v(2em) + it + v(1em)
+  // }
   show heading.where(level: 2): it => v(1em) + it + v(0.5em)
   show heading.where(level: 3): it => v(0.5em) + it + v(0.25em)
 
@@ -151,27 +154,34 @@
 
   set page(
     margin: (top: 8em, bottom: 8em),
-    header: {
+    header: context {
       if (show-header) {
         grid(
           columns: (1fr, auto),
           align: (left, right),
           gutter: 2em,
-          emph(align(center + horizon,text(size: 10pt, title))),
+          text(size: 10pt,  {
+            let headings = query(heading.where(level: 1))
+            if headings.len() > 0 and not headings.any(it => it.location().page() == here().page() - 1) {
+              hydra(1, skip-starting: true)
+            } 
+          }),
           stack(dir: ltr,
-            spacing: 1em,
+            spacing: 2em,
             if logo-left != none {
               set image(height: left-logo-height / 2)
               logo-left
             },
             if logo-right != none {
-              set image(height: right-logo-height / 2)
-              logo-right
+              //set image(height: 5%)
+              //logo-right
+
+              image("/assets/hensoldt-cyber-square.png", width: 50pt, height: 50pt)
             }
           )
         )
         v(-0.75em)
-        line(length: 100%)
+        line(length: 100%, stroke: 0.5pt + black.lighten(10%))
       }
     }
   )
@@ -196,6 +206,7 @@
       date-format
     )
   }
+  
 
   if (show-declaration-of-authorship) {
     declaration-of-authorship(
@@ -209,6 +220,9 @@
       date-format
     )
   }
+
+
+  pagebreak()
 
   show outline.entry.where(
     level: 1,
@@ -233,6 +247,8 @@
     }
   }
 
+  pagebreak()
+
   context {
     let elems = query(figure.where(kind: table), here())
     let count = elems.len()
@@ -249,6 +265,8 @@
     }
   }
 
+  pagebreak()
+
   context {
     let elems = query(figure.where(kind: raw), here())
     let count = elems.len()
@@ -264,6 +282,8 @@
       )
     }
   }
+
+  pagebreak()
   
   if (show-table-of-contents) {
     outline(title: [#if (language == "de") {
@@ -272,10 +292,16 @@
       [Table of Contents]
     }], indent: auto, depth: toc-depth)
   }
-    
+
+  pagebreak()
+
   if (show-acronyms and acronyms != none and acronyms.len() > 0) {
-    print-acronyms(language, acronym-spacing)
+    heading(level: 1, outlined: false, numbering: none)[List of Acronyms]
+    show: make-glossary
+    print-glossary(acronyms, disable-back-references: true)
   }
+
+  pagebreak()
 
   set par(justify: true, leading: 1em)
   set block(spacing: 2em)
@@ -284,9 +310,15 @@
     align(center + horizon, heading(level: 1, numbering: none)[Abstract])
     text(abstract)
   }
+
+
   
-  
+  // set page numbering to arabic numbering
+  set heading(numbering: "1.")
+
   // reset page numbering and set to arabic numbering
+  
+  
   set page(
     numbering: "1",
     footer: context align(numbering-alignment, numbering(
@@ -294,8 +326,8 @@
     ..counter(page).get(),
     ..counter(page).at(<end>),
     ))
-  )
-  counter(page).update(1)
+  ) 
+  counter(page).update(1) 
 
   body
 

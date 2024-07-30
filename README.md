@@ -131,11 +131,11 @@ Behind the arguments the type of the value is given in parentheses. All argument
 
 This template provides the following functions to reference acronyms:
 
-`acr`: Reference an acronym in the text
+`gls`: Reference an acronym in the text
 
 `acrpl`: Reference an acronym in the text in plural form
 
-`acrs`: Reference an acronym in the text in short form (e.g. `acr("API")` -> `API`)
+`gls-short`: Reference an acronym in the text in short form (e.g. `gls("api")` -> `API`)
 
 `acrspl`: Reference an acronym in the text in short form in plural form (e.g. `acrpl("API")` -> `APIs`)
 

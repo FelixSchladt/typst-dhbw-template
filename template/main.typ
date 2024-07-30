@@ -38,11 +38,11 @@
 
 == Acronyms
 
-Use the `acr` function to insert acronyms, which looks like this #acr("HTTP").
+Use the `gls` function to insert acronyms, which looks like this #gls("HTTP").
 
 #acrlpl("API") are used to define the interaction between different software systems.
 
-#acrs("REST") is an architectural style for networked applications.
+#gls-short("REST") is an architectural style for networked applications.
 
 == Lists
 
