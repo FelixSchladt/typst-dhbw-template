@@ -118,9 +118,9 @@
     true
     //str(it.dest) not in (acronyms.keys().map(gls => ("acronym-" + gls)))
   ) {
-    text(fill: blue, it)
+    text(fill: black, it)
   } else {
-    it
+    itew
   }
   
   // show heading.where(level: 1): it => {
@@ -328,6 +328,7 @@
     ))
   ) 
   counter(page).update(1) 
+
 
   body
 
