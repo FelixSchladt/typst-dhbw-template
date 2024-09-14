@@ -31,7 +31,7 @@
   show-abstract: true,
   show-header: true,
   numbering-alignment: center,
-  toc-depth: 3,
+  toc-depth: 2,
   acronym-spacing: 5em,
   abstract: none,
   appendix: none,
@@ -162,8 +162,11 @@
           gutter: 2em,
           text(size: 10pt,  {
             let headings = query(heading.where(level: 1))
-            if headings.len() > 0 and not headings.any(it => it.location().page() == here().page() - 1) {
-              hydra(1, skip-starting: true)
+            //[#here().page()]
+            if not here().page() in (3, 12, ) {
+              if headings.len() > 0 and not headings.any(it => it.location().page() == here().page() - 1) {
+                hydra(1, skip-starting: true)
+              }
             } 
           }),
           stack(dir: ltr,
@@ -221,6 +224,18 @@
     )
   }
 
+  pagebreak()
+
+  context {
+  set par(justify: true, leading: 1em)
+  set block(spacing: 2em)
+
+  if (show-abstract and abstract != none) {
+    align(center + horizon, heading(level: 1, numbering: none)[Abstract])
+    text(abstract)
+  }
+  }
+
 
   pagebreak()
 
@@ -231,20 +246,25 @@
     strong(it)
   }
 
-  context {
-    let elems = query(figure.where(kind: image), here())
-    let count = elems.len()
-    
-    if (show-list-of-figures and count > 0) {
-      outline(
-        title: [#heading(level: 3)[#if (language == "de") {
-          [Abbildungsverzeichnis]
-        } else {
-          [List of Figures]
-        }]],
-        target: figure.where(kind: image),
-      )
-    }
+  show heading.where(level: 1): it =>{
+    it
+    v(25pt)
+  }
+  
+  if (show-table-of-contents) {
+    outline(title: [#if (language == "de") {
+      [Inhaltsverzeichnis]
+    } else {
+      [Table of Contents]
+    }], indent: auto, depth: toc-depth)
+  }
+
+  pagebreak()
+
+  if (show-acronyms and acronyms != none and acronyms.len() > 0) {
+    heading(level: 1, outlined: false, numbering: none)[List of Acronyms]
+    show: make-glossary
+    print-glossary(acronyms, disable-back-references: true)
   }
 
   pagebreak()
@@ -268,6 +288,25 @@
   pagebreak()
 
   context {
+    let elems = query(figure.where(kind: image), here())
+    let count = elems.len()
+    
+    if (show-list-of-figures and count > 0) {
+      outline(
+        title: [#heading(level: 3)[#if (language == "de") {
+          [Abbildungsverzeichnis]
+        } else {
+          [List of Figures]
+        }]],
+        target: figure.where(kind: image),
+      )
+    }
+  }
+
+
+  pagebreak()
+
+  context {
     let elems = query(figure.where(kind: raw), here())
     let count = elems.len()
 
@@ -281,34 +320,6 @@
         target: figure.where(kind: raw),
       )
     }
-  }
-
-  pagebreak()
-  
-  if (show-table-of-contents) {
-    outline(title: [#if (language == "de") {
-      [Inhaltsverzeichnis]
-    } else {
-      [Table of Contents]
-    }], indent: auto, depth: toc-depth)
-  }
-
-  pagebreak()
-
-  if (show-acronyms and acronyms != none and acronyms.len() > 0) {
-    heading(level: 1, outlined: false, numbering: none)[List of Acronyms]
-    show: make-glossary
-    print-glossary(acronyms, disable-back-references: true)
-  }
-
-  pagebreak()
-
-  set par(justify: true, leading: 1em)
-  set block(spacing: 2em)
-
-  if (show-abstract and abstract != none) {
-    align(center + horizon, heading(level: 1, numbering: none)[Abstract])
-    text(abstract)
   }
 
 
@@ -353,13 +364,15 @@
     bibliography
   }
 
+  pagebreak()
+
   if (show-appendix and appendix != none) {
-    heading(level: 1, numbering: none)[#if (language == "de") {
-      [Anhang]
-    } else {
-      [Appendix]
-    }]
-    appendix
+    // heading(level: 1, numbering: none)[#if (language == "de") {
+    //   [Anhang]
+    // } else {
+    //   [Appendix]
+    // }]
+    include appendix
   }
   
 }
