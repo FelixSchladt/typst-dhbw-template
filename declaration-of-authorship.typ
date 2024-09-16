@@ -54,7 +54,11 @@
 
     text([#authors.map(author => author.company.city).dedup().join(", ", last: connection-string), #end-date.display(date-format)])
   }
-
+  place(
+    dx: 40pt, 
+    dy: 10pt,
+    image("/imgs/signature_felix_schladt_cropped.jpeg", width: 20%)
+  )
   v(1em)
   if (many-authors) {
     grid(
@@ -69,8 +73,11 @@
   } else {
     for author in authors {
       v(4em)
+      
       line(length: 40%)
       author.name
     }
   }
+  
 }
+
