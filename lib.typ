@@ -163,7 +163,7 @@
           text(size: 10pt,  {
             let headings = query(heading.where(level: 1))
             //[#here().page()]
-            if not here().page() in (3, 12, ) {
+            if not here().page() in (3, 11, ) {
               if headings.len() > 0 and not headings.any(it => it.location().page() == here().page() - 1) {
                 hydra(1, skip-starting: true)
               }
